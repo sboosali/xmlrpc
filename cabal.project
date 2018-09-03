@@ -3,7 +3,9 @@
 --------------------------------------------------
 packages:
 
-         ./xmlrpc.cabal
+         ./xmlrpc/
+         
+         -- ./xmlrpc-*
 
          ./examples/
 
