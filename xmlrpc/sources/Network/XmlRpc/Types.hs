@@ -13,7 +13,13 @@ module Network.XmlRpc.Types where
 
 --------------------------------------------------
 
+import           "time" Data.Time.Calendar
+import           "time" Data.Time.LocalTime
 
+-------------------------------------------------
+
+import qualified "bytestring" Data.ByteString.Char8      as BS (ByteString)
+import qualified "bytestring" Data.ByteString.Lazy.Char8 as BL (ByteString)
 
 -------------------------------------------------
 
@@ -64,8 +70,9 @@ class FromXmlRpc a where
   --   :: (Generic a, GFromJSON 0 (Rep a))
   --   => Value -> Parser a
 
-  fromValueList :: [Value] -> Parser a
-  -- fromValueList 
+  -- | for @instance FromXmlRpc 'Char'@, to avoid @OverlappingInstances@ between @instance FromXmlRpc ['Char']@ and @instance FromXmlRpc [a]@.
+  fromValueList :: [Value] -> Parser [a]
+  fromValueList = traverse fromValue
 
 --------------------------------------------------
 
@@ -99,27 +106,90 @@ class FromXmlRpcF r where
 
 {-| 
 
+An XML-RPC method call. Consists of a method name and a list of parameters.
+
 -}
 
-data Value
+data MethodCall = MethodCall String [Value]
 
 --------------------------------------------------
 
 {-| 
+
+An XML-RPC response.
+
+-}
+
+data MethodResponse = Return Value -- ^ A method response returning a value
+                    | Fault Int String -- ^ A fault response
+
+--------------------------------------------------
+
+{-| An XML-RPC value (similar to @JSON@).
+
+primitive types:
+
+* numbers (int, double)
+* strings (strings, bytestrings)
+* booleans
+* timestamps
+
+composite types:
+
+* array (a list of Values)
+* struct (a map from Strings to Values)
+
+-}
+
+data Value
+    = ValueInt Int -- ^ int, i4, or i8
+    | ValueBool Bool -- ^ bool
+    | ValueString String -- ^ string
+    | ValueUnwrapped String -- ^ no inner element
+    | ValueDouble Double -- ^ double
+    | ValueDateTime LocalTime -- ^ dateTime.iso8601
+    | ValueBase64 BS.ByteString -- ^ base 64.  NOTE that you should provide the raw data; the haxr library takes care of doing the base-64 encoding.
+    | ValueStruct [(String,Value)] -- ^ struct
+    | ValueArray [Value]  -- ^ array
+
+--------------------------------------------------
+
+{-| 
+
+An XML-RPC value. Use for error messages and introspection.
 
 -}
 
 data Type
+          = TInt
+          | TBool
+          | TString
+          | TDouble
+          | TDateTime
+          | TBase64
+          | TStruct
+          | TArray
+          | TUnknown
 
 --------------------------------------------------
 
 {-| 
 
-@~ ExceptT String m a@
+@≍ ExceptT String m a@
 
 -}
 
 data Parser a
+
+  = Parser a
+  
+  deriving stock    (Functor,Foldable,Traversable)
+  deriving stock    (Lift,Generic)
+ -- deriving anyclass (NFData,Hashable)
+
+instance Applicative Parser where
+  pure = Parser
+  (Parser f) <*> (Parser x) = Parser (f x)
 
 -- instance Monad     Parser
 -- instance MonadFail Parser
