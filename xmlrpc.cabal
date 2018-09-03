@@ -7,7 +7,7 @@ Build-type: Simple
             
 Copyright: Sam Boosalis 2018
 License:      BSD-3-Clause
-License-file: LICENSE
+License-file: documents/LICENSE
 Author:     Bjorn Bringert <bjorn@bringert.net>, Malcolm Wallace <Malcolm.Wallace@me.com>, Brent Yorgey <byorgey@gmail.com>, Sam Boosalis <samboosalis@gmail.com>
 Maintainer: Sam Boosalis <samboosalis@gmail.com>
             
