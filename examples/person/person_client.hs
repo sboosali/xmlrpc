@@ -6,7 +6,7 @@ import Network.XmlRpc.Client
 import PersonTH
 import Prelude
 
-server = "http://localhost/~bjorn/cgi-bin/person_server"
+server = "http://localhost/~sboo/cgi-bin/person_server"
 
 listPeople :: IO [Person]
 listPeople = remote server "listPeople"

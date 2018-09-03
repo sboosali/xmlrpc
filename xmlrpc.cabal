@@ -4,38 +4,42 @@ Name: xmlrpc
 Version: 0.0.0
          
 Build-type: Simple
+            
 Copyright: Sam Boosalis 2018
 License:      BSD-3-Clause
 License-file: LICENSE
-Author:     Bjorn Bringert <bjorn@bringert.net>, Malcolm Wallace <Malcolm.Wallace@me.com>
+Author:     Bjorn Bringert <bjorn@bringert.net>, Malcolm Wallace <Malcolm.Wallace@me.com>, Brent Yorgey <byorgey@gmail.com>, Sam Boosalis <samboosalis@gmail.com>
 Maintainer: Sam Boosalis <samboosalis@gmail.com>
-Homepage: 
-Category: RPC, XML, Network
+            
 Synopsis: XML-RPC client and server library.
 Description:
         XMLRPC is a library for writing XML-RPC
         client and server applications in Haskell.
+Category: RPC, XML, Network
+
 
 Extra-Source-Files:
-        CHANGES
-        examples/make-stubs.hs        examples/parse_response.hs    examples/Person.hs
-        examples/PersonTH.hs          examples/person_client.hs     examples/person_server.hs
-        examples/raw_call.hs          examples/simple_client.hs     examples/simple_server.hs
-        examples/test_client.hs       examples/test_server.hs       examples/time-xmlrpc-com.hs
-        examples/validate.hs          examples/Makefile
-Bug-reports: https://github.com/byorgey/xmlrpc/issues
+                   Makefile
+                   README.md
+                   LICENSE
+                              
 Tested-with:
   GHC == 8.4.3
 
+Homepage: https://github.com/sboosali/xmlrpc#readme
+Bug-reports: https://github.com/sboosali/xmlrpc/issues
+
 Source-repository head
   type:     git
-  location: git://github.com/byorgey/xmlrpc.git
+  location: git://github.com/sboosali/xmlrpc.git
+  subdir:   xmlrpc
 
 flag network-uri
    description: Get Network.URI from the network-uri package
-   default: True
+   default: False
 
 Library
+  hs-source-dirs: sources
   Build-depends: base < 5,
                  base-compat >= 0.8 && < 0.10,
                  mtl,

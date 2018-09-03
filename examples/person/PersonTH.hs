@@ -7,7 +7,7 @@
 --   See person_server.hs and person_client.hs for examples.
 module PersonTH where
 
-import Network.XmlRpc.Internals
+import Network.XmlRpc.Internals()
 import Network.XmlRpc.THDeriveXmlRpcType
 import Prelude
 

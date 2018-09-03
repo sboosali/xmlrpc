@@ -5,7 +5,7 @@
 -- stubs for all the methods available at the server.
 
 import Network.XmlRpc.Internals
-import Network.XmlRpc.Client
+import Network.XmlRpc.Client()
 import Network.XmlRpc.Introspect
 
 import Data.List
@@ -27,7 +27,7 @@ showHaskellType TArray = "[Value]"
 showHaskellType TUnknown = error "unknown type"
 
 showHdr :: String -> String -> Doc
-showHdr mod url = text "module" <+> text mod <+> text "where" 
+showHdr mod' url = text "module" <+> text mod' <+> text "where" 
                    $$ text "import Network.XmlRpc.Client" 
                    $$ text "import Network.XmlRpc.Internals (Value)"
                    $$ text "import System.Time (CalendarTime)"
@@ -42,8 +42,8 @@ showStub (name,[(as,ret)],help) =
      $$ text hsname <+> text "= remote server" <+> doubleQuotes (text name)
     where 
     hsname = mkname name
-    ft = map (text . showHaskellType) as 
-	 ++ [text "IO" <+> text (showHaskellType ret)]
+    ft = map (text . showHaskellType) as
+      ++ [text "IO" <+> text (showHaskellType ret)]
     mkname [] = []
     mkname ('.':xs) = '_':mkname xs
     mkname (x:xs) = x:mkname xs
@@ -53,22 +53,23 @@ printStub :: String -> String -> IO ()
 printStub url method = methodInfo url method >>= putStrLn . show . showStub
 
 printModule :: String -> String -> IO ()
-printModule mod url = do
-		      ms <- listMethods url
-		      putStrLn $ show $ showHdr mod url
-		      mapM_ (printStub url) ms
+printModule mod' url = do
+              ms <- listMethods url
+              putStrLn $ show $ showHdr mod' url
+              mapM_ (printStub url) ms
 
 parseArgs :: IO (String,String)
 parseArgs = do
-	    args <- getArgs
-	    case args of 
-		      [mod,url] -> return (mod,url)
-		      _ -> do
-			   hPutStrLn stderr "Usage: make-stubs module-name url"
-			   exitFailure
+  args <- getArgs
+  case args of
+    [mod',url] -> do
+      return (mod',url)
+    _         -> do
+      hPutStrLn stderr "Usage: make-stubs module-name url"
+      exitFailure
 
 main :: IO ()
 main = do
        hSetBuffering stdout NoBuffering
-       (mod,url) <- parseArgs
-       printModule mod url
+       (mod',url) <- parseArgs
+       printModule mod' url

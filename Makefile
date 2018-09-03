@@ -1,17 +1,42 @@
 ##################################################
+# Makefile Variables
+##################################################
+
+BaseDirectory=$(CURDIR)
+
+DefaultTarget=xmlrpc
+
+##################################################
+# the `default` target
+##################################################
+
 default: build
 
 .PHONY: default
 
 ##################################################
+# `cabal` wrapper targets
+##################################################
+
 check:
 	cabal new-build -fno-code -O0 all
 
 .PHONY: check
 
 ##################################################
+build: build-default
+
+.PHONY: build
+
+##################################################
+build-default:
+	cabal new-build $(DefaultTarget)
+
+.PHONY: build-default
+
+##################################################
 repl:
-	cabal new-repl haxr
+	cabal new-repl $(DefaultTarget)
 
 .PHONY: repl
 
@@ -21,11 +46,6 @@ clean:
 	rm -f *.project.local .ghc.environment.*
 
 .PHONY: clean
-
-##################################################
-build: cabal-compile
-
-.PHONY: build
 
 ##################################################
 cabal-compile:
@@ -40,7 +60,13 @@ stack-compile:
 .PHONY: stack-compile
 
 ##################################################
-examples: build
+build-examples:
+	cabal new-build xmlrpc-examples
+
+.PHONY: build-examples
+
+##################################################
+examples: build-examples
 	@echo '=================================================='
 	cabal new-run xmlrpc-example-time
 	@echo '=================================================='
