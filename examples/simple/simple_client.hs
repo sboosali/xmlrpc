@@ -1,6 +1,9 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 -- A client for simple_server
 
 import Network.XmlRpc.Client
+import Prelude
 
 server = "http://localhost/~bjorn/cgi-bin/simple_server"
 

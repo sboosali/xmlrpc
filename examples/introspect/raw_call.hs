@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 -- Reads a method call in XML from standard input, sends it to a
 -- server and prints the response to standard output. Must be editied 
 -- to use the right server URL.
@@ -11,6 +13,7 @@ import System.IO (hPutStrLn, stderr)
 import Network.XmlRpc.Internals
 import Network.HTTP
 import Network.Stream
+import Prelude
 
 parseArgs :: IO String
 parseArgs = do

@@ -1,7 +1,10 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 -- A simple server
 
 import System.Time
 import Network.XmlRpc.Server
+import Prelude
 
 add :: Int -> Int -> IO Int
 add x y = return (x + y)

@@ -1,7 +1,10 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 -- | Example client using a heterogeneous struct.
 
 import Network.XmlRpc.Client
 import PersonTH
+import Prelude
 
 server = "http://localhost/~bjorn/cgi-bin/person_server"
 

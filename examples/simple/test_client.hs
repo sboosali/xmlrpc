@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 -- A simple client that calls the methods in test_server.hs
 
 import System.Environment (getArgs)
@@ -6,6 +8,7 @@ import System.IO (hPutStrLn, stderr)
 import System.Time
 
 import Network.XmlRpc.Client
+import Prelude
 
 time :: String -> IO CalendarTime
 time url = remote url "examples.time"

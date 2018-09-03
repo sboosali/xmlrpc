@@ -1,3 +1,6 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
+import Prelude
 import Network.XmlRpc.Client
 import System.Time
 

@@ -60,7 +60,7 @@ source-repository head
 ----------------------------------------
 -- COMMON_STANZAS
 ----------------------------------------
-common haskell2020
+common haskell2018
 
  build-depends:
   base >=4.8 && <5.0
@@ -105,7 +105,6 @@ common haskell2020
 
   -- use `typed-holes`, not `undefined`, during development
 
-  -fdefer-typed-holes
   -Wtyped-holes
 
   --------------------
@@ -195,83 +194,83 @@ common haskell2020
    --------------------
    ScopedTypeVariables
 
- other-extensions:
-
-   --------------------
-   -- macros
-   --------------------
-   TemplateHaskell
-   -- QuasiQuotes
-
-   --------------------
-   -- syntax (of literals)
-   --------------------
-   OverloadedStrings
-   OverloadedLists
-
-   --------------------
-   -- (miscellaneous)
-   --------------------
-
-   -- RebindableSyntax
-   -- kinds:
-   -- DataKinds ConstraintKinds
-   -- harmful to inference:
-   -- GADTs RankNTypes
-   -- (miscellaneous)
-
 --------------------------------------------------
 -- EXECUTABLES
 --------------------------------------------------
 
 executable xmlrpc-example-simple
- import: haskell2020
+ import: haskell2018
 
  ghc-options: -Wno-missing-signatures
  
- main-is:        Main.hs
+ main-is:        test_server.hs
+                 --TODO test_client.hs too
  hs-source-dirs: simple
  
  build-depends:
                xmlrpc
+             , old-time
 
 --------------------------------------------------
 
 executable xmlrpc-example-person
- import: haskell2020
+ import: haskell2018
 
- ghc-options: -Wno-missing-signatures
+ ghc-options:      -Wno-missing-signatures
+ other-extensions: TemplateHaskell
  
- main-is:        Main.hs
+ main-is:        person_server.hs
+                 --TODO person_client.hs too
  hs-source-dirs: person
  
+ other-modules:
+   Person
+   PersonTH
+
  build-depends:
                xmlrpc
+             , pretty
 
 --------------------------------------------------
 
 executable xmlrpc-example-introspect
- import: haskell2020
+ import: haskell2018
 
  ghc-options: -Wno-missing-signatures
  
- main-is:        Main.hs
+ main-is:        make-stubs.hs
  hs-source-dirs: introspect
- 
+
  build-depends:
                xmlrpc
+             , pretty
 
 --------------------------------------------------
 
-executable xmlrpc-example-official
- import: haskell2020
+executable xmlrpc-example-time
+ import: haskell2018
 
  ghc-options: -Wno-missing-signatures
  
- main-is:        Main.hs
- hs-source-dirs: official
+ main-is:        time-xmlrpc-com.hs
+ hs-source-dirs: time-xmlrpc-com
  
  build-depends:
                xmlrpc
+             , old-time
+
+--------------------------------------------------
+
+executable xmlrpc-example-validator
+ import: haskell2018
+
+ ghc-options: -Wno-missing-signatures
+ 
+ main-is:        validator-xmlrpc-com.hs
+ hs-source-dirs: validator-xmlrpc-com
+ 
+ build-depends:
+               xmlrpc
+             , old-time
 
 --------------------------------------------------

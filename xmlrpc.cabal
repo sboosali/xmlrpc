@@ -10,7 +10,7 @@ License-file: LICENSE
 Author:     Bjorn Bringert <bjorn@bringert.net>, Malcolm Wallace <Malcolm.Wallace@me.com>
 Maintainer: Sam Boosalis <samboosalis@gmail.com>
 Homepage: 
-Category: Network
+Category: RPC, XML, Network
 Synopsis: XML-RPC client and server library.
 Description:
         XMLRPC is a library for writing XML-RPC

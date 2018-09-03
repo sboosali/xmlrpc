@@ -1,7 +1,10 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 -- | Example server using a heterogeneous struct.
 
 import Network.XmlRpc.Server
 import PersonTH
+import Prelude
 
 listPeople :: IO [Person]
 listPeople = return [

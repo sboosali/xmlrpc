@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 -- Connects to an XML-RPC server that supports introspection
 -- and prints a Haskell module to standard output that contains
 -- stubs for all the methods available at the server.
@@ -11,6 +13,7 @@ import System.Exit (exitFailure)
 import System.Environment (getArgs)
 import System.IO 
 import Text.PrettyPrint.HughesPJ
+import Prelude
 
 showHaskellType :: Type -> String
 showHaskellType TInt = "Int"

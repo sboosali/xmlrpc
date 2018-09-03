@@ -1,8 +1,11 @@
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 -- | This module demonstrates how to handle heterogeneous structs.
 --   See person_server.hs and person_client.hs for examples.
 module Person where
 
 import Network.XmlRpc.Internals
+import Prelude
 
 -- | Record type used to represent the struct in Haskell.
 data Person = Person { name :: String, age :: Int, spouse :: Maybe String } deriving Show
