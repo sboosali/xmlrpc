@@ -1,80 +1,352 @@
 Cabal-version: 2.2
 
-Name: xmlrpc
-Version: 0.0.0
-         
+----------------------------------------
+
+Name:       xmlrpc
+Version:    0.0.0
 Build-type: Simple
-            
-Copyright: Sam Boosalis 2018
-License:      BSD-3-Clause
-License-file: documents/LICENSE
-Author:     Bjorn Bringert <bjorn@bringert.net>, Malcolm Wallace <Malcolm.Wallace@me.com>, Brent Yorgey <byorgey@gmail.com>, Sam Boosalis <samboosalis@gmail.com>
-Maintainer: Sam Boosalis <samboosalis@gmail.com>
+
+----------------------------------------
             
 Synopsis: XML-RPC client and server.
+Category: RPC, XML, Network
+
 Description:
             @xmlrpc@ is a library for writing XML-RPC
             clients and XML-RPC servers in Haskell.
             .
             Modernizes the @haxr@ package.
-Category: RPC, XML, Network
 
+----------------------------------------
+            
+License:      BSD-3-Clause
+License-file: documents/LICENSE
+
+Copyright:  Sam Boosalis 2018
+Maintainer: Sam Boosalis <samboosalis@gmail.com>
+Author:
+       Bjorn Bringert <bjorn@bringert.net>
+       Malcolm Wallace <Malcolm.Wallace@me.com>
+       Brent Yorgey <byorgey@gmail.com>
+       Sam Boosalis <samboosalis@gmail.com>
 
 Extra-Source-Files:
                    README.md
                    LICENSE
-                              
+           
 Tested-with:
   GHC == 8.4.3
 
-Homepage: https://github.com/sboosali/xmlrpc#readme
+----------------------------------------
+
+Homepage:    https://github.com/sboosali/xmlrpc#readme
 Bug-reports: https://github.com/sboosali/xmlrpc/issues
+
+----------------------------------------
 
 Source-repository head
   type:     git
   location: git://github.com/sboosali/xmlrpc.git
   subdir:   xmlrpc
 
-Library
-  hs-source-dirs: sources
-  Build-depends: base < 5,
-                 base-compat >= 0.8 && < 0.10,
-                 mtl,
-                 mtl-compat,
-                 network >= 2.6,
-                 network-uri >= 2.6, 
-                 http-streams,
-                 HsOpenSSL,
-                 io-streams,
-                 http-types,
-                 HaXml2 >= 1.25.6,
-                 http-streams,
-                 bytestring,
-                 base64-bytestring,
-                 old-locale,
-                 old-time,
-                 time,
-                 text,
-                 array,
-                 utf8-string,
-                 template-haskell,
-                 blaze-builder >= 0.2 && < 0.5
+----------------------------------------
+-- COMMON_STANZAS
+----------------------------------------
+common haskell2020
 
-  Exposed-Modules:
-        Network.XmlRpc.Client,
-        Network.XmlRpc.Server,
-        Network.XmlRpc.Internals,
-        Network.XmlRpc.Introspect,
-        Network.XmlRpc.THDeriveXmlRpcType,
-        Network.XmlRpc.Pretty,
-        Network.XmlRpc.DTD_XMLRPC
+ build-depends:
+  base >=4.8 && <5.0
+  -- ^ all components must agree on `base`.
+  -- by sharing this `build-depends` fragment,
+  -- across components, via this `common` stanza,
+  -- we both guarantee it and make it more convenience.
 
-  Other-Modules:
-        Network.XmlRpc.Base64
+ default-language:
+   Haskell2010
 
-  Default-extensions: TypeSynonymInstances, FlexibleInstances, PackageImports
-  Other-extensions: OverloadedStrings, GeneralizedNewtypeDeriving, TemplateHaskell
-  Default-language: Haskell2010
+ ------------------------------
+ ------------------------------
+ ghc-options:
+
+  --------------------
+  -- warning groups
+  --------------------
+
+  -Wall
+
+  --------------------
+  -- disabled warnings
+  --------------------
+
+  -Wno-unticked-promoted-constructors
+
+  --------------------
+  -- enabled warnings
+  --------------------
+
+  -- enable
+  -Wincomplete-uni-patterns
+  -Wincomplete-record-updates
+  -Widentities
+  -Wmissing-methods
+  -fwarn-tabs
+ 
+  --------------------
+  -- typed-holes
+  --------------------
+
+  -- use `typed-holes`, not `undefined`, during development
+
+  -fdefer-typed-holes
+  -Wtyped-holes
+
+  --------------------
+  -- (miscellaneous warnings)
+  --------------------
+
+  -- raise a warning into an error
+  -- -Werror=missing-fields
+
+ if impl(ghc >= 8.0)
+    ghc-options:
+
+        --------------------
+        -- warning groups
+        --------------------     
+
+        -Wcompat
+      
+        --------------------
+        -- enabled warnings
+        --------------------
+
+        -Wnoncanonical-monad-instances
+        -Wnoncanonical-monadfail-instances
+
+ ------------------------------
+ ------------------------------
+
+ default-extensions:
+
+   --------------------
+   -- "controversial"
+   --------------------
+   NoImplicitPrelude
+
+   --------------------
+   -- `deriving`
+   --------------------
+   AutoDeriveTypeable
+   DeriveDataTypeable
+   DeriveGeneric
+   DeriveFunctor
+   DeriveFoldable
+   DeriveTraversable
+   DeriveLift
+   StandaloneDeriving
+
+   DerivingStrategies
+   DeriveAnyClass
+   GeneralizedNewtypeDeriving
+
+   --------------------
+   -- syntax
+   --------------------
+   PackageImports
+   LambdaCase
+   EmptyCase
+   TypeOperators
+   PostfixOperators
+   BangPatterns
+   KindSignatures
+   NamedFieldPuns
+   RecordWildCards
+   TupleSections
+   MultiWayIf
+   DoAndIfThenElse
+   EmptyDataDecls
+   InstanceSigs
+   
+   --------------------
+   -- typeclasses
+   --------------------
+   MultiParamTypeClasses
+   FlexibleContexts
+   FlexibleInstances
+   TypeFamilies
+   FunctionalDependencies
+
+   --------------------
+   -- patterns
+   --------------------
+   ViewPatterns
+   PatternSynonyms
+
+   --------------------
+   -- (miscellaneous)
+   --------------------
+   ScopedTypeVariables
+
+ other-extensions:
+
+   --------------------
+   -- macros
+   --------------------
+   TemplateHaskell
+   -- QuasiQuotes
+
+   --------------------
+   -- syntax (of literals)
+   --------------------
+   OverloadedStrings
+   OverloadedLists
+
+   --------------------
+   -- (miscellaneous)
+   --------------------
+
+   -- RebindableSyntax
+   -- kinds:
+   -- DataKinds ConstraintKinds
+   -- harmful to inference:
+   -- GADTs RankNTypes
+   -- (miscellaneous)
+
+---------------------------------------
+-- LIBRARY
+----------------------------------------
+
+library
+
+ import: haskell2020
+
+ hs-source-dirs:
+   sources
+
+ -------------------------   
+
+ exposed-modules:
+                 Network.XmlRpc.Types
+                 
+                 Network.XmlRpc.Client
+                 Network.XmlRpc.Server
+                 Network.XmlRpc.Internals
+                 Network.XmlRpc.Introspect
+                 Network.XmlRpc.THDeriveXmlRpcType
+                 Network.XmlRpc.Pretty
+                 Network.XmlRpc.DTD_XMLRPC
+
+ other-modules:
+               Prelude_xmlrpc
+               Network.XmlRpc.Base64
+
+ -------------------------
+ build-depends:
+
+  --------------------
+  -- my packages
+  -- (sboosali on github, sboo on hackage)
+  --------------------
+
+    spiros    >=0.2
+--, enumerate >=0.2 
+
+ --------------------
+ -- boot libraries / "standard" library
+ --------------------
+
+  , text 
+  , bytestring
+
+  , transformers
+  , mtl
+
+  , containers
+  , array
+
+  , template-haskell
+
+  --------------------
+  -- "extended" standard library 
+  --------------------
+
+  , deepseq
+
+  , hashable
+  , unordered-containers
+
+  , exceptions
+
+  --------------------
+  -- XML libraries. 
+  --------------------
+
+  , HaXml2 >= 1.25.6
+
+  --------------------
+  -- network libraries. 
+  --------------------
+
+  , network     >= 2.6
+  , network-uri >= 2.6
+
+  , http-types
+  , http-streams
+  , HsOpenSSL
+  , io-streams
+
+  --------------------
+  -- string libraries.
+  --------------------
+
+  , base64-bytestring
+  , utf8-string
+
+  --------------------
+  -- Formatting/Templating packages
+  --------------------
+
+  , blaze-builder >= 0.2 && < 0.5
+--, ansi-wl-pprint
+
+  --------------------
+  -- time libraries.
+  --------------------
+
+  , old-locale
+  , old-time
+  , time
+
+  --------------------
+  -- ekmett 
+  --------------------
+
+  , bifunctors
+  , profunctors
+
+  --------------------
+  -- records libraries.
+  --------------------
+   
+  , lens
+  , generic-lens
+  , vinyl
+  
+  --------------------
+  -- Parsing packages
+  --------------------
+
+  , parsers
+             
+  --------------------
+  -- (miscellaneous packages)
+  --------------------
+
+  , base-compat >= 0.8 && < 0.10
+  , mtl-compat
+--  , 
+
+  --------------------
 
 ----------------------------------------
 -- TESTS

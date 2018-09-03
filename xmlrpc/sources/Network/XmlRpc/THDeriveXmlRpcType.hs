@@ -17,6 +17,8 @@
 
 module Network.XmlRpc.THDeriveXmlRpcType (asXmlRpcStruct) where
 
+import Prelude--_xmlrpc
+
 import           Control.Monad            (liftM, replicateM)
 import           Data.List                (genericLength)
 import           Data.Maybe               (maybeToList)

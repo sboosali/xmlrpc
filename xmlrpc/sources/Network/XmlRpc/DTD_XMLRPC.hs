@@ -1,5 +1,7 @@
 module Network.XmlRpc.DTD_XMLRPC where
 
+import Prelude--_xmlrpc
+
 import           Text.XML.HaXml.OneOfN
 import           Text.XML.HaXml.Types      (QName (..))
 import           Text.XML.HaXml.XmlContent

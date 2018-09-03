@@ -9,8 +9,10 @@
 module Network.XmlRpc.Pretty (document, content, element, 
                               doctypedecl, prolog, cp) where
 
+--import Prelude_xmlrpc
 import Prelude hiding (maybe, elem, concat, null, head, (<>))
 import qualified Prelude as P
+
 import Data.ByteString.Lazy.Char8 (ByteString(), elem, empty)
 import qualified Data.ByteString.Lazy.UTF8 as BU
 import Text.XML.HaXml.Types

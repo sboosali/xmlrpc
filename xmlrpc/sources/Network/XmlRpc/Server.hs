@@ -28,6 +28,8 @@ module Network.XmlRpc.Server
      handleCall, methods, cgiXmlRpcServer,
     ) where
 
+import Prelude--_xmlrpc
+
 import           Network.XmlRpc.Internals
 
 import qualified Codec.Binary.UTF8.String   as U

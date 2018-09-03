@@ -46,6 +46,11 @@ toXRMember, fromXRMember,
 Err, maybeToM, handleError, ioErrorToErr
 ) where
 
+--import Prelude_xmlrpc
+import Prelude hiding (showString)
+
+import           Network.XmlRpc.Types()
+
 import           Control.Exception
 import           Control.Monad
 import           "mtl" Control.Monad.Except

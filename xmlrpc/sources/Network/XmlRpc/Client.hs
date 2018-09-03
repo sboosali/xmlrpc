@@ -37,6 +37,8 @@ module Network.XmlRpc.Client
      Remote
     ) where
 
+import Prelude--_xmlrpc
+
 import           Network.XmlRpc.Internals
 
 import           Data.Functor               ((<$>))

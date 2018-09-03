@@ -3,6 +3,8 @@ module Network.XmlRpc.Base64 (
     decode
 ) where
 
+import Prelude--_xmlrpc
+
 import           Data.ByteString
 import qualified Data.ByteString.Base64 as B64
 

@@ -1,5 +1,7 @@
 module Network.XmlRpc.Introspect where
 
+import Prelude--_xmlrpc
+
 import           Network.XmlRpc.Client
 import           Network.XmlRpc.Internals
 
