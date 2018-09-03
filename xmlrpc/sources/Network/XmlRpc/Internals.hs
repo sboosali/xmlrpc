@@ -48,7 +48,7 @@ Err, maybeToM, handleError, ioErrorToErr
 
 import           Control.Exception
 import           Control.Monad
-import           Control.Monad.Except
+import           "mtl" Control.Monad.Except
 import           Data.Char
 import           Data.List
 import           Data.Maybe

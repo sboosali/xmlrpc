@@ -41,6 +41,12 @@ repl:
 .PHONY: repl
 
 ##################################################
+test:
+	cabal new-test $(DefaultTarget)
+
+.PHONY: test
+
+##################################################
 clean:
 	rm -rf "dist/" "dist-newstyle/"
 	rm -f *.project.local .ghc.environment.*

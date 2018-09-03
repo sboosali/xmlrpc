@@ -33,11 +33,6 @@ jobs: 6
 -- LocalFlags (which apply only to LocalPackages)-
 --------------------------------------------------
 
-haddock-hyperlink-source: True
-haddock-hoogle:           True
-
---------------------------------------------------
-
 extra-lib-dirs:     /home/sboo/.nix-profile/lib/
 extra-include-dirs: /home/sboo/.nix-profile/include/
 extra-prog-path:    /home/sboo/.nix-profile/bin/
@@ -46,8 +41,13 @@ extra-prog-path:    /home/sboo/.nix-profile/bin/
 --------------------------------------------------
 
 tests:         True
-benchmarks:    True
+benchmarks:    False
 documentation: False
+
+--------------------------------------------------
+
+haddock-hyperlink-source: True
+haddock-hoogle:           True
 
 -- tests:         False
 -- benchmarks:    False

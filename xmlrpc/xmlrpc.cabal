@@ -11,15 +11,16 @@ License-file: documents/LICENSE
 Author:     Bjorn Bringert <bjorn@bringert.net>, Malcolm Wallace <Malcolm.Wallace@me.com>, Brent Yorgey <byorgey@gmail.com>, Sam Boosalis <samboosalis@gmail.com>
 Maintainer: Sam Boosalis <samboosalis@gmail.com>
             
-Synopsis: XML-RPC client and server library.
+Synopsis: XML-RPC client and server.
 Description:
-        XMLRPC is a library for writing XML-RPC
-        client and server applications in Haskell.
+            @xmlrpc@ is a library for writing XML-RPC
+            clients and XML-RPC servers in Haskell.
+            .
+            Modernizes the @haxr@ package.
 Category: RPC, XML, Network
 
 
 Extra-Source-Files:
-                   Makefile
                    README.md
                    LICENSE
                               
@@ -34,17 +35,14 @@ Source-repository head
   location: git://github.com/sboosali/xmlrpc.git
   subdir:   xmlrpc
 
-flag network-uri
-   description: Get Network.URI from the network-uri package
-   default: False
-
 Library
   hs-source-dirs: sources
   Build-depends: base < 5,
                  base-compat >= 0.8 && < 0.10,
                  mtl,
                  mtl-compat,
-                 network < 2.7,
+                 network >= 2.6,
+                 network-uri >= 2.6, 
                  http-streams,
                  HsOpenSSL,
                  io-streams,
@@ -62,11 +60,6 @@ Library
                  template-haskell,
                  blaze-builder >= 0.2 && < 0.5
 
-  if flag(network-uri)
-    build-depends: network-uri >= 2.6, network >= 2.6
-  else
-    build-depends: network-uri < 2.6, network < 2.6
-
   Exposed-Modules:
         Network.XmlRpc.Client,
         Network.XmlRpc.Server,
@@ -75,8 +68,44 @@ Library
         Network.XmlRpc.THDeriveXmlRpcType,
         Network.XmlRpc.Pretty,
         Network.XmlRpc.DTD_XMLRPC
+
   Other-Modules:
         Network.XmlRpc.Base64
-  Default-extensions: TypeSynonymInstances, FlexibleInstances
+
+  Default-extensions: TypeSynonymInstances, FlexibleInstances, PackageImports
   Other-extensions: OverloadedStrings, GeneralizedNewtypeDeriving, TemplateHaskell
   Default-language: Haskell2010
+
+----------------------------------------
+-- TESTS
+----------------------------------------
+
+test-suite xmlrpc-properties
+ --TODO import: haskell2020
+
+ hs-source-dirs:      tests
+ main-is:             Properties.hs
+ type:                exitcode-stdio-1.0
+
+ Default-language:   Haskell2010
+ default-extensions: PackageImports
+ other-extensions:   OverloadedStrings
+
+ build-depends:
+
+               xmlrpc
+               
+             , base
+             , mtl
+             
+             , old-time
+             , bytestring
+             , string-conv
+
+             , QuickCheck
+             , tasty-quickcheck
+
+             , hedgehog
+             , tasty-hedgehog
+
+----------------------------------------

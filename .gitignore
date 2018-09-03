@@ -1,28 +1,53 @@
-dist-*
+# my
+.sboo/
+ignore/ 
+temporary/
+
+# ghcid
+*.ghcid
+.ghcid.d/
+
+# Haskell
 .ghc.environment.*
 cabal.project.local
-
-.stack-work/
-
-dist
-cabal-dev
-.hsenv_*
-dist_*
-.diagrams-cache
-.cabal-sandbox
-cabal.sandbox.config
-examples/wp-test
-history
-TAGS
-
 *.o
-*.dyn_hi
-*.dyn_o
 *.hi
 *.chi
 *.chs.h
-.virthualenv
+report.html
+.cabal-sandbox/
+cabal.sandbox.config
+cabal.config
+dist-newstyle/
+dist-*/
+dist/
+.stack-work/
+.styx/
 
+# nix
+result-*/
+result/
+
+# Emacs
 *~
+\#*
+.\#*
 \#*\#
+,*
+.*.swp
+.*.swo
+TAGS
+.projectile
+
+# Python
+*.pyc
+
+# OS X
+.DS_Store
+
+# miscellaneous
+*.save
+.diagrams-cache
+history
+TAGS
 
