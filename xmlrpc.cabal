@@ -1,17 +1,19 @@
-Name: haxr
-Version: 3000.11.3
-Cabal-version: >=1.10
+Cabal-version: 2.2
+
+Name: xmlrpc
+Version: 0.0.0
+         
 Build-type: Simple
-Copyright: Bjorn Bringert, 2003-2006
-License: BSD3
+Copyright: Sam Boosalis 2018
+License:      BSD-3-Clause
 License-file: LICENSE
-Author: Bjorn Bringert <bjorn@bringert.net>
-Maintainer: Brent Yorgey <byorgey@gmail.com>
-Homepage: http://www.haskell.org/haskellwiki/HaXR
+Author:     Bjorn Bringert <bjorn@bringert.net>, Malcolm Wallace <Malcolm.Wallace@me.com>
+Maintainer: Sam Boosalis <samboosalis@gmail.com>
+Homepage: 
 Category: Network
 Synopsis: XML-RPC client and server library.
 Description:
-        HaXR is a library for writing XML-RPC
+        XMLRPC is a library for writing XML-RPC
         client and server applications in Haskell.
 
 Extra-Source-Files:
@@ -21,12 +23,13 @@ Extra-Source-Files:
         examples/raw_call.hs          examples/simple_client.hs     examples/simple_server.hs
         examples/test_client.hs       examples/test_server.hs       examples/time-xmlrpc-com.hs
         examples/validate.hs          examples/Makefile
-Bug-reports: https://github.com/byorgey/haxr/issues
-Tested-with: GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
+Bug-reports: https://github.com/byorgey/xmlrpc/issues
+Tested-with:
+  GHC == 8.4.3
 
 Source-repository head
   type:     git
-  location: git://github.com/byorgey/haxr.git
+  location: git://github.com/byorgey/xmlrpc.git
 
 flag network-uri
    description: Get Network.URI from the network-uri package
@@ -42,7 +45,7 @@ Library
                  HsOpenSSL,
                  io-streams,
                  http-types,
-                 HaXml >= 1.25.6 && < 1.26,
+                 HaXml2 >= 1.25.6,
                  http-streams,
                  bytestring,
                  base64-bytestring,

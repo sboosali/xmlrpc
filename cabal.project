@@ -3,7 +3,9 @@
 --------------------------------------------------
 packages:
 
- ./haxr.cabal
+         ./xmlrpc.cabal
+
+--         ./examples
 
 ----------------------------------------
 optional-packages:
