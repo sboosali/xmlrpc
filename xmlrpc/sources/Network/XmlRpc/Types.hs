@@ -48,7 +48,7 @@ class ToXmlRpc a where
   --   :: (Generic a, GToJSON Value 0 (Rep a)) 
   --   => a -> Value
 
-  getType :: a -> Type
+  getType :: a -> ValueType
 
   -- default getType
   --   :: (Generic a, GToJSON Value 0 (Rep a)) 
@@ -104,24 +104,139 @@ class FromXmlRpcF r where
 
 --------------------------------------------------
 
-{-| 
+{-| An XML-RPC method call.
 
-An XML-RPC method call. Consists of a method name and a list of parameters.
+Consists of a method name ('MethodName') and a list of parameters (@['Value']@).
+
+Corresponds to the @<methodCall>@ element in an XML-RPC request.
 
 -}
 
-data MethodCall = MethodCall String [Value]
+data MethodCall = MethodCall
+
+ { function  :: String
+ , arguments :: [Value]
+ }
+
+ deriving stock    (Show,Read,Eq,Ord,Generic)
+ deriving anyclass (NFData)
 
 --------------------------------------------------
 
-{-| 
+{-| An XML-RPC response.
 
-An XML-RPC response.
+'MethodFault' is failure, 'MethodReturn' is success.
 
 -}
 
-data MethodResponse = Return Value -- ^ A method response returning a value
-                    | Fault Int String -- ^ A fault response
+type MethodResponse = Either MethodFault MethodReturn
+
+--------------------------------------------------
+
+{-|  A successful XML-RPC response.
+
+i.e. the XML-RPC method returns with a single 'Value'.
+
+-}
+
+newtype MethodReturn = MethodReturn
+  { returnValue :: Value
+  } 
+
+  deriving stock    (Show,Read,Generic)
+  deriving newtype  (Eq,Ord)
+  deriving newtype  (NFData)
+
+--------------------------------------------------
+
+-- | @= 'defaultMethodReturn'@
+instance Default MethodReturn where
+  def = defaultMethodReturn
+
+-- | @= 'emptyMethodReturn'@
+defaultMethodReturn :: MethodReturn
+defaultMethodReturn = emptyMethodReturn
+
+--------------------------------------------------
+
+{-| A failed XML-RPC response. 
+
+i.e. the XML-RPC method fails, with an arbitrary error 'message', and a custom error 'code'.
+
+'MethodFault' corresponds to the @<fault>@ element in an XML-RPC response:
+
+* 'code': corresponds to a @<faultCode>@ element.
+* 'messsage': corresponds to @<faultString>@ element.
+
+NOTE the XML-RPC Specification doesn't specify any meanings for error 'code's.
+Thus, they can be implementation-defined (e.g. mirroring the @sh@ell exit codes); or service-defined, for a particular server-client pair .
+
+-}
+
+data MethodFault = MethodFault
+  { code    :: Int
+  , message :: String
+  }
+
+  deriving stock    (Show,Read,Eq,Ord,Lift,Generic)
+  deriving anyclass (NFData,Hashable)
+
+--------------------------------------------------
+
+-- | @= 'defaultMethodFault'@
+instance Default MethodFault where
+  def = defaultMethodFault
+
+{-| A non-zero code and no message:
+
+@
+'code'    = 1
+'message' = ""
+@
+
+-}
+
+defaultMethodFault :: MethodFault
+defaultMethodFault = MethodFault{..}
+  where
+  code    = 1
+  message = ""
+
+--------------------------------------------------
+
+{- |
+
+The @<methodName>@ string in an XML-RPC request can have only the following characters:
+
+* alphanumeric (i.e. upper-case @A-Z@, lower-case @a-z@, and numeric characters @0-9@)
+* identifier
+* underscore, dot, colon, slash
+
+-}
+
+newtype MethodName = MethodName
+
+  String
+
+  deriving stock    (Show,Read,Lift,Generic)
+  deriving newtype  (Eq,Ord,Semigroup,Monoid)
+  deriving newtype  (NFData,Hashable)
+
+instance IsString MethodName where
+  fromString = coerce
+
+--------------------------------------------------
+
+-- newtype MethodCall = MethodCall
+
+--   String
+
+--   deriving stock    (Show,Read,Lift,Generic)
+--   deriving newtype  (Eq,Ord,Semigroup,Monoid)
+--   deriving newtype  (NFData,Hashable)
+
+-- instance IsString MethodCall where
+--   fromString = coerce
 
 --------------------------------------------------
 
@@ -139,37 +254,108 @@ composite types:
 * array (a list of Values)
 * struct (a map from Strings to Values)
 
+NOTE:
+
+* 'ValueBase64': provide the raw data via a smart-constructor (like 'base64Value') which automatically encodes it into the @base-64@ format.
+
 -}
 
 data Value
-    = ValueInt Int -- ^ int, i4, or i8
-    | ValueBool Bool -- ^ bool
-    | ValueString String -- ^ string
-    | ValueUnwrapped String -- ^ no inner element
-    | ValueDouble Double -- ^ double
-    | ValueDateTime LocalTime -- ^ dateTime.iso8601
-    | ValueBase64 BS.ByteString -- ^ base 64.  NOTE that you should provide the raw data; the haxr library takes care of doing the base-64 encoding.
-    | ValueStruct [(String,Value)] -- ^ struct
-    | ValueArray [Value]  -- ^ array
 
---------------------------------------------------
+  = ValueBool        Bool             -- ^ @≡ \<bool\>@
 
-{-| 
+  | ValueInt         Int              -- ^ @≡ \<int\>@ (or @\<i4\>@ or @\<i8\>@)
+  | ValueDouble      Double           -- ^ @≡ \<double\>@
 
-An XML-RPC value. Use for error messages and introspection.
+  | ValueString      String           -- ^ @≡ \<string\>@
+  | ValueUnwrapped   String           -- ^ TODO? (like @\<string\>@, but no inner element)
+  | ValueBase64      BS.ByteString    -- ^ @≡ \<base64\>@
+
+  | ValueDateTime    LocalTime        -- ^ @≡ \<dateTime.iso8601\>@
+
+  | ValueStruct      StructOfValues   -- ^ @≡ \<struct\>@
+  | ValueArray       ArrayOfValues    -- ^ @≡ \<array\>@
+
+  deriving stock    (Show,Read,Eq,Ord,Generic)
+  deriving anyclass (NFData)
+
+{-
+
+[Problem]
+
+    * No instance for (Lift BS.ByteString)
+    * No instance for (Hashable LocalTime)
 
 -}
 
-data Type
-          = TInt
-          | TBool
-          | TString
-          | TDouble
-          | TDateTime
-          | TBase64
-          | TStruct
-          | TArray
-          | TUnknown
+--------------------------------------------------
+
+{-| @= 'stringValue'@
+
+**WARNING** this is a partial function.
+
+-}
+
+instance IsString Value where
+  fromString = stringValue
+
+--------------------------------------------------
+
+{-|
+
+-}
+
+type StructOfValues = [(String,Value)]  -- TODO Map String Value (keys are unordered and unduplicated)
+
+--------------------------------------------------
+
+{-|
+
+-}
+
+type ArrayOfValues = [Value] -- TODO Array/Seq Value (is finite)
+
+--------------------------------------------------
+
+{-|
+
+**WARNING** this is a partial function, because it performs validation.
+
+-}
+
+stringValue :: String -> Value
+stringValue
+  = validStringValue
+  > maybe _stringValue id 
+
+--------------------------------------------------
+
+{-| An XML-RPC value-type.
+
+Used for error messages and introspection.
+
+-}
+
+data ValueType
+
+  = TypeBool
+
+  | TypeInt
+  | TypeDouble
+
+  | TypeString
+  | TypeBase64
+
+  | TypeDateTime
+
+  | TypeStruct
+  | TypeArray
+
+  --TODO | TypeUnknown
+
+  deriving stock    (Enum,Bounded,Ix)
+  deriving stock    (Show,Read,Eq,Ord,Lift,Generic)
+  deriving anyclass (NFData,Hashable)
 
 --------------------------------------------------
 
@@ -205,8 +391,92 @@ instance Applicative Parser where
 data Result a
 
 --------------------------------------------------
+
+{-| the type ('ValueType') of the given value ('Value').
+
+For example,
+
+@
+> 'valueType' ('ValueBool' _)
+'TypeBool'
+@
+
+i.e.
+
+@
+>>> import Prelude (undefined)
+>>> valueType (ValueBool False)
+TypeBool
+>>> valueType (ValueBool True)
+TypeBool
+>>> valueType (ValueBool undefined)
+TypeBool
+@
+
+and so on.
+
+-}
+
+valueType :: Value -> ValueType
+valueType = \case
+
+  ValueBool      {} -> TypeBool
+  ValueInt       {} -> TypeInt
+  ValueDouble    {} -> TypeDouble
+  ValueString    {} -> TypeString
+  ValueUnwrapped {} -> TypeString
+  ValueBase64    {} -> TypeBase64
+  ValueDateTime  {} -> TypeDateTime
+  ValueStruct    {} -> TypeStruct
+  ValueArray     {} -> TypeArray
+
+--------------------------------------------------
+
+{-| A (successful) method that returns nothing. 
+
+@≡ ""@
+
+The empty string substitutes '()', because the XML-RPC Standard doesn't explicitly support the @null@ value.
+
+-}
+
+emptyMethodReturn :: MethodReturn
+emptyMethodReturn = MethodReturn{..}
+  where
+  returnValue = coerce (stringValue "")
+
+--------------------------------------------------
+
+{-|
+
+
+
+-}
+
+validStringValue :: String -> Maybe Value
+validStringValue = _validStringValue
+
+--------------------------------------------------
 --------------------------------------------------
 {- NOTES
+
+
+
+
+
+valueType :: Value -> Maybe ValueType
+valueType = \case
+
+  ValueBool      {} -> Just TypeBool
+  ValueInt       {} -> Just TypeInt
+  ValueDouble    {} -> Just TypeDouble
+  ValueString    {} -> Just TypeString
+  ValueUnwrapped {} -> Just TypeUnwrapped
+  ValueBase64    {} -> Just TypeBase64
+  ValueDateTime  {} -> Just TypeDateTime
+  ValueStruct    {} -> Just TypeStruct
+  ValueArray     {} -> Just TypeArray
+  _                 -> Nothing
 
 
 
