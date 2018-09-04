@@ -248,102 +248,101 @@ library
   -- (sboosali on github, sboo on hackage)
   --------------------
 
-    spiros    >=0.2
+               spiros    >=0.2
 --, enumerate >=0.2 
 
  --------------------
  -- boot libraries / "standard" library
  --------------------
 
-  , text 
-  , bytestring
+             , text
+             , bytestring
 
-  , transformers
-  , mtl
+             , transformers
+             , mtl
 
-  , containers
-  , array
+             , containers
+             , array
 
-  , template-haskell
+             , template-haskell
 
   --------------------
   -- "extended" standard library 
   --------------------
 
-  , deepseq
+             , deepseq
+             , hashable
 
-  , hashable
-  , unordered-containers
-
-  , exceptions
+             , unordered-containers
+             , exceptions
 
   --------------------
   -- XML libraries. 
   --------------------
 
-  , HaXml2 >= 1.25.6
+             , HaXml2 >= 1.25.6
 
   --------------------
   -- network libraries. 
   --------------------
 
-  , network     >= 2.6
-  , network-uri >= 2.6
+             , network     >= 2.6
+             , network-uri >= 2.6
 
-  , http-types
-  , http-streams
-  , HsOpenSSL
-  , io-streams
+             , http-types
+             , http-streams
+             , HsOpenSSL
+             , io-streams
 
   --------------------
   -- string libraries.
   --------------------
 
-  , base64-bytestring
-  , utf8-string
+             , base64-bytestring
+             , utf8-string
 
   --------------------
   -- Formatting/Templating packages
   --------------------
 
-  , blaze-builder >= 0.2 && < 0.5
+             , blaze-builder >= 0.2 && < 0.5
 --, ansi-wl-pprint
 
   --------------------
   -- time libraries.
   --------------------
 
-  , old-locale
-  , old-time
-  , time
+             , old-locale
+             , old-time
+             , time
 
   --------------------
   -- ekmett 
   --------------------
 
-  , bifunctors
-  , profunctors
+             , bifunctors
+             , profunctors
 
   --------------------
   -- records libraries.
   --------------------
-   
-  , lens
-  , generic-lens
-  , vinyl
+
+             , lens
+             , generic-lens
+             , vinyl
   
   --------------------
   -- Parsing packages
   --------------------
 
-  , parsers
+             , parsers
              
   --------------------
   -- (miscellaneous packages)
   --------------------
 
-  , base-compat >= 0.8 && < 0.10
-  , mtl-compat
+             , base-compat >= 0.8 && < 0.10
+             , mtl-compat
 --  , 
 
   --------------------
@@ -364,7 +363,6 @@ test-suite xmlrpc-properties
  other-extensions:   OverloadedStrings
 
  build-depends:
-
                xmlrpc
                
              , base

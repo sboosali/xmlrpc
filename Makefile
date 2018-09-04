@@ -4,7 +4,7 @@
 
 BaseDirectory=$(CURDIR)
 
-DefaultTarget=xmlrpc
+DefaultTarget="lib:xmlrpc"
 
 ##################################################
 # the `default` target
