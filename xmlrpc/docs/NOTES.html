@@ -1,0 +1,353 @@
+<h1 id="xml-rpc"><code>XML-RPC</code></h1>
+
+<p>My notes about the <code>XML RPC</code> Specification, which determined this implementation (i.e. <code>xmlrpc</code>).</p>
+
+<h2 id="links">Links</h2>
+
+<p><a href="http://xmlrpc.scripting.com/spec.html">http://xmlrpc.scripting.com/spec.html</a></p>
+
+<h2 id="specification">Specification</h2>
+
+<h2 id="summary">Summary</h2>
+
+<p>An <code>XML-RPC</code> message is a <code>POST</code>-method <code>HTTP</code> request. The body of the request is in <code>XML. 
+</code>
+The <code>ResponseBody</code> is also in <code>XML</code> (formatted from the value returned by the procedure that executes on the server).</p>
+
+<p>Procedure parameters can be: numbers, strings, dates, booleans, (but not null); or, a record or a list thereof.</p>
+
+<h3 id="examplerequest">Example <code>Request</code></h3>
+
+<p>e.g. an <code>XML-RPC</code> Request:</p>
+
+<pre><code>POST /RPC2 HTTP/1.0
+User-Agent: Frontier/5.1.2 (WinNT)
+Host: betty.userland.com
+Content-Type: text/xml
+Content-length: 181
+
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;methodCall&gt;
+   &lt;methodName&gt;examples.getStateName&lt;/methodName&gt;
+   &lt;params&gt;
+      &lt;param&gt;
+         &lt;value&gt;&lt;i4&gt;41&lt;/i4&gt;&lt;/value&gt;
+         &lt;/param&gt;
+      &lt;/params&gt;
+   &lt;/methodCall&gt;
+</code></pre>
+
+<p><code>NOTE</code>: As any <code>HTTP_Request</code>, there&#8217;s a double <code>&quot;\n\r&quot;</code> between headers and body.</p>
+
+<h3 id="therequest">The <code>Request</code></h3>
+
+<h4 id="therequestheaders">The <code>RequestHeaders</code></h4>
+
+<h5 id="uri:"><code>URI:</code></h5>
+
+<p>The format of the URI in the first line of the header may-or-may-not specified. For example, it could be empty, a single slash, if the server is only handling <code>XML-RPC</code> calls.</p>
+
+<p>However, if the server is handling a mix of incoming <code>HTTP</code> requests, we allow the URI to help route the request to the code that handles <code>XML-RPC</code> requests. (In the example, the <code>URI</code> is <code>/RPC2</code>, telling the server to route the request to the <code>&quot;RPC2&quot;</code> method-handler.)</p>
+
+<h5 id="user-agent:andhost:"><code>User-Agent:</code> and <code>Host:</code></h5>
+
+<p>Both the host and a user-agent are required.</p>
+
+<h5 id="content-type:"><code>Content-Type:</code></h5>
+
+<p>the content-type is <code>text/xml</code>.</p>
+
+<h5 id="content-length:"><code>Content-Length:</code></h5>
+
+<p>the content-length must be specified and must be correct.</p>
+
+<h4 id="therequestbodyspayload">The <code>RequestBody</code>&#8217;s Payload</h4>
+
+<p>The payload is in <code>XML</code>, a single <code>&lt;methodCall&gt;</code> structure.</p>
+
+<p>The <code>&lt;methodCall&gt;</code> must contain a <code>&lt;methodName&gt;</code> sub-item, a string, containing the name of the method to be called. The string may only contain identifier characters, upper and lower-case A-Z, the numeric characters, 0&#8211;9, underscore, dot, colon and slash.
+It has no intrinsic interpretation (It&#8217;s entirely up to the server to decide how to interpret the characters in a methodName. For example, the methodName could be the name of a file containing a script that executes on an incoming request. It could be the name of a cell in a database table. Or it could be a path to a file contained within a hierarchy of folders and files.)</p>
+
+<h3 id="xml-rpcvalues"><code>XML-RPC</code> Values</h3>
+
+<p>An <code>XML-RPC</code> value is like a <code>JSON</code> value. It has:</p>
+
+<ul>
+<li>several primitive (a.k.a. &#8220;scalar&#8221;) values, including a <code>datetime</code>, but excluding <code>null</code>.</li>
+<li>two aggregate (a.k.a. &#8220;vector&#8221;) values, records and tuples.</li>
+</ul>
+
+<h4 id="scalarvalues">&#8220;Scalar&#8221; <code>&lt;value&gt;</code>s</h4>
+
+<p>if a type tag is absent, the type defaults to string (i.e. <code>&lt;string&gt;</code>s may be implicit).</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;"><code>XML</code> Tag</th>
+	<th style="text-align:left;"><code>XML-RPC</code> Type</th>
+	<th style="text-align:left;">Example</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;"><code>&lt;i4&gt;</code> or <code>&lt;int&gt;</code></td>
+	<td style="text-align:left;">four-byte signed integer.</td>
+	<td style="text-align:left;"><code>-12</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>&lt;boolean&gt;</code></td>
+	<td style="text-align:left;"><code>0</code> (<code>false</code>) or <code>1</code> (<code>true</code>).</td>
+	<td style="text-align:left;"><code>1</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>&lt;string&gt;</code></td>
+	<td style="text-align:left;">string.</td>
+	<td style="text-align:left;"><code>hello world</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>&lt;double&gt;</code></td>
+	<td style="text-align:left;">double-precision signed floating-point number.</td>
+	<td style="text-align:left;"><code>-12.214</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>&lt;dateTime.iso8601&gt;</code></td>
+	<td style="text-align:left;">date &amp; time.</td>
+	<td style="text-align:left;"><code>19980717T14:08:55</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>&lt;base64&gt;</code></td>
+	<td style="text-align:left;">base64-encoded binary.</td>
+	<td style="text-align:left;"><code>eW91IGNhbid0IHJlYWQgdGhpcyE=</code></td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="structs"><code>&lt;struct&gt;</code>s</h4>
+
+<p>A <code>&lt;struct&gt;</code> is a &#8220;record&#8221; (a.k.a. <code>dict</code>, a.k.a. <code>attrset</code>).</p>
+
+<p>A <code>&lt;struct&gt;</code> contains <code>&lt;member&gt;</code>s, and each <code>&lt;member&gt;</code> contains a <code>&lt;name&gt;</code> and a <code>&lt;value&gt;</code>.</p>
+
+<p><code>&lt;struct&gt;</code>s are recursive, i.e. any <code>&lt;member&gt;</code> may be any <code>&lt;value&gt;</code> or <code>&lt;struct&gt;</code> or <code>&lt;array&gt;</code>.</p>
+
+<p>e.g. a two-element <code>&lt;struct&gt;</code>:</p>
+
+<pre><code>  &lt;struct&gt;
+
+   &lt;member&gt;
+      &lt;name&gt;lowerBound&lt;/name&gt;
+      &lt;value&gt;&lt;i4&gt;18&lt;/i4&gt;&lt;/value&gt;
+    &lt;/member&gt;
+
+   &lt;member&gt;
+      &lt;name&gt;upperBound&lt;/name&gt;
+      &lt;value&gt;&lt;i4&gt;139&lt;/i4&gt;&lt;/value&gt;
+    &lt;/member&gt;
+
+   &lt;/struct&gt;
+</code></pre>
+
+<p>i.e. (in a pseudo-syntax for records):</p>
+
+<pre><code>{ lowerBound = 18, upperBound = 139 }
+</code></pre>
+
+<p>The syntax for a <code>&lt;member&gt;</code> being:</p>
+
+<pre><code>   &lt;member&gt;
+      &lt;name&gt;...&lt;/name&gt;
+      ...
+    &lt;/member&gt;
+</code></pre>
+
+<h4 id="arrays"><code>&lt;array&gt;</code>s</h4>
+
+<p>An <code>&lt;array&gt;</code> is a &#8220;tuple&#8221; (a.k.a. a heterogeneous list).</p>
+
+<p>An <code>&lt;array&gt;</code> contains a single <code>&lt;data&gt;</code> element, and the <code>&lt;data&gt;</code> contains any number of <code>&lt;value&gt;</code>s.</p>
+
+<p><code>&lt;array&gt;</code>s are recursive, i.e. any datum in <code>&lt;data&gt;</code> may be any <code>&lt;value&gt;</code> or <code>&lt;struct&gt;</code> or <code>&lt;array&gt;</code>.</p>
+
+<p>e.g. a four-element <code>&lt;array&gt;</code>:</p>
+
+<pre><code>&lt;array&gt;
+  &lt;data&gt;
+
+    &lt;value&gt;&lt;i4&gt;12&lt;/i4&gt;&lt;/value&gt;
+
+    &lt;value&gt;&lt;string&gt;Egypt&lt;/string&gt;&lt;/value&gt;
+
+    &lt;value&gt;&lt;boolean&gt;0&lt;/boolean&gt;&lt;/value&gt;
+
+    &lt;value&gt;&lt;i4&gt;-31&lt;/i4&gt;&lt;/value&gt;
+
+  &lt;/data&gt;
+&lt;/array&gt;
+</code></pre>
+
+<p>i.e. (in a pseudo-syntax for heterogeneous lists):</p>
+
+<pre><code>[ 12      :: Int
+, &quot;Egypt&quot; :: String
+, False   :: Bool
+, -31     :: Int
+]
+</code></pre>
+
+<h3 id="exampleresponsesuccess">Example <code>Response</code> (success)</h3>
+
+<p>e.g. a successful <code>XML-RPC</code> Response:</p>
+
+<pre><code>HTTP/1.1 200 OK
+Connection: close
+Content-Length: 158
+Content-Type: text/xml
+Date: Fri, 17 Jul 1998 19:55:08 GMT
+Server: UserLand Frontier/5.1.2-WinNT
+
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;methodResponse&gt;
+   &lt;params&gt;
+      &lt;param&gt;
+         &lt;value&gt;&lt;string&gt;South Dakota&lt;/string&gt;&lt;/value&gt;
+         &lt;/param&gt;
+      &lt;/params&gt;
+   &lt;/methodResponse&gt;
+</code></pre>
+
+<h3 id="exampleresponsefailure">Example <code>Response</code> (failure)</h3>
+
+<p>e.g. a failed <code>XML-RPC</code> Response:</p>
+
+<pre><code>HTTP/1.1 200 OK
+Connection: close
+Content-Length: 426
+Content-Type: text/xml
+Date: Fri, 17 Jul 1998 19:55:02 GMT
+Server: UserLand Frontier/5.1.2-WinNT
+
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;methodResponse&gt;
+   &lt;fault&gt;
+      &lt;value&gt;
+         &lt;struct&gt;
+            &lt;member&gt;
+               &lt;name&gt;faultCode&lt;/name&gt;
+               &lt;value&gt;&lt;int&gt;4&lt;/int&gt;&lt;/value&gt;
+               &lt;/member&gt;
+            &lt;member&gt;
+               &lt;name&gt;faultString&lt;/name&gt;
+               &lt;value&gt;&lt;string&gt;Too many parameters.&lt;/string&gt;&lt;/value&gt;
+               &lt;/member&gt;
+            &lt;/struct&gt;
+         &lt;/value&gt;
+      &lt;/fault&gt;
+   &lt;/methodResponse&gt;
+</code></pre>
+
+<p><code>NOTE</code>: As any <code>HTTP_Request</code>, there&#8217;s a double <code>&quot;\n\r&quot;</code> between headers and body.</p>
+
+<h3 id="theresponse">The <code>Response</code></h3>
+
+<p>Return <code>200 OK</code> unless there&#8217;s a lower-level error.</p>
+
+<p>The <code>Content-Type:</code> is <code>text/xml</code>.</p>
+
+<p>The <code>Content-Length:</code> must be present and correct.</p>
+
+<p>The <code>RequestBody</code> is a <code>&lt;methodResponse&gt;</code>.</p>
+
+<h4 id="methodresponse"><code>&lt;methodResponse&gt;</code></h4>
+
+<ul>
+<li><code>&lt;params&gt;</code>:</li>
+</ul>
+
+<p>The body of the response is a single XML structure, a <code>&lt;methodResponse&gt;</code>. it can contain a single <code>&lt;params&gt;</code>, which contains a single <code>&lt;param&gt;</code>, which contains a single <code>&lt;value&gt;</code>.</p>
+
+<ul>
+<li><code>&lt;fault&gt;</code>:</li>
+</ul>
+
+<p>The <code>&lt;methodResponse&gt;</code> could also contain a <code>&lt;fault&gt;</code> which contains a <code>&lt;value&gt;</code> which is a <code>&lt;struct&gt;</code> containing two elements, one named <code>&lt;faultCode&gt;</code>, an <code>&lt;int&gt;</code> and one named <code>&lt;faultString&gt;</code>, a <code>&lt;string&gt;</code>.</p>
+
+<p><code>NOTE</code>: <code>&lt;fault&gt;</code> and <code>&lt;params&gt;</code> are mutually exclusive; <code>&lt;methodResponse&gt;</code> can not contain both a <code>&lt;fault&gt;</code> and a <code>&lt;params&gt;</code>; but <code>&lt;methodResponse&gt;</code> must contain <em>either</em> a <code>&lt;fault&gt;</code> or a <code>&lt;params&gt;</code>.</p>
+
+<h3 id="null"><code>null</code>?</h3>
+
+<p>No, the <code>null</code> value is undefined by the standard (unsupported).</p>
+
+<p>Different implementations may reject it, or may implement it as:</p>
+
+<ul>
+<li><code>&lt;nil /&gt;</code></li>
+<li><code>&lt;ex:nil /&gt;</code></li>
+<li><code>&lt;array /&gt;</code></li>
+<li><code>&lt;array&gt;&lt;data&gt;...&lt;data/&gt;&lt;array/&gt;</code></li>
+<li>etc.</li>
+</ul>
+
+<h3 id="unicode"><code>Unicode</code>?</h3>
+
+<p>Yes, <code>Unicode</code> is supported. Because the <code>XML</code> format itself supports <code>Unicode</code>.</p>
+
+<h3 id="faq">FAQ</h3>
+
+<h4 id="intsyntaxrange"><code>&lt;int&gt;</code> Syntax/Range?</h4>
+
+<p><code>Q:</code> the legal syntax (and range) for integers? How to deal with leading zeros? Is a leading plus sign allowed? How to deal with whitespace?</p>
+
+<p><code>A:</code> An integer is a 32-bit signed number. You can include a plus or minus at the beginning of a string of numeric characters. Leading zeros are collapsed. Whitespace is not permitted. Just numeric characters preceeded by a plus or minus.</p>
+
+<h4 id="doublesyntaxrange"><code>&lt;double&gt;</code> Syntax/Range?</h4>
+
+<p><code>Q:</code> What is the legal syntax (and range) for floating point values (doubles)? How is the exponent represented? How to deal with whitespace? Can infinity and &#8220;not a number&#8221; be represented?</p>
+
+<p><code>A:</code> There is no representation for infinity or negative infinity or &#8220;not a number&#8221;. At this time, only decimal point notation is allowed, a plus or a minus, followed by any number of numeric characters, followed by a period and any number of numeric characters. Whitespace is not allowed. The range of allowable values is implementation-dependent, is not specified.</p>
+
+<h4 id="validcharactersofstring">Valid Characters of <code>&lt;string&gt;</code>?</h4>
+
+<p><code>Q:</code> What characters are allowed in strings? Non-printable characters? Null characters? Can a &#8220;string&#8221; be used to hold an arbitrary chunk of binary data?</p>
+
+<p><code>A:</code> Any characters are allowed in a string except <code>&lt;</code> and <code>&amp;</code>, which are encoded as <code>&amp;lt;</code> and <code>&amp;amp;</code>. A string can be used to encode binary data.</p>
+
+<h4 id="isstructordered">Is <code>&lt;struct&gt;</code> Ordered?</h4>
+
+<p><code>Q:</code> Does the &#8220;struct&#8221; element keep the order of keys. Or in other words, is the struct &#8220;foo=1, bar=2&#8221; equivalent to &#8220;bar=2, foo=1&#8221; or not?</p>
+
+<p><code>A:</code> The struct element does not preserve the order of the keys. The two structs are equivalent.</p>
+
+<h4 id="isfaultopen">Is <code>&lt;fault&gt;</code> Open?</h4>
+
+<p><code>Q:</code> Can the <code>&lt;fault&gt;</code> struct contain other members than <code>&lt;faultCode&gt;</code> and <code>&lt;faultString&gt;</code>? Is there a global list of faultCodes? (so they can be mapped to distinct exceptions for languages like Python and Java)?</p>
+
+<p><code>A:</code> No, a <code>&lt;fault&gt;</code> struct may not contain members other than those specified. This is true for all other structures. We believe the specification is flexible enough so that all reasonable data-transfer needs can be accomodated within the specified structures. If you believe strongly that this is not true, please post a message on the discussion group.
+There is no global list of fault codes. It is up to the server implementer, or higher-level standards to specify fault codes.</p>
+
+<h4 id="timezone">Timezone?</h4>
+
+<p><code>Q:</code> What timezone should be assumed for the dateTime.iso8601 type? UTC? localtime?</p>
+
+<p><code>A:</code> Don&#8217;t assume a timezone. It should be specified by the server in its documentation what assumptions it makes about timezones.</p>
+
+<h4 id="">`</h4>
+
+<p><code>Q:</code> how to represent a null parameter value?</p>
+
+<p><code>A:</code> <code>XML-RPC</code> doesn&#8217;t strictly have a NULL or None value: xmlrpc.com Some times it is represented by using an empty list, but this is implementation specific. Particular libraries also may have extensions that allow sending and receiving NULL values, but again, it is implementation specific and might not work between arbitrary pairs of client/server libraries.
+– Adam Vandenberg</p>
+
+<p><code>A:</code> Needs a vendor extension. Python’s extension uses <code>&lt;nil /&gt;</code>. .NET&#8217;s xml rpc extension also uses <code>&lt;nil /&gt;</code>. However, Apache’s xml-rpc doesn&#8217;t, it uses <code>ex: nil /&gt;</code>.</p>
+
+<h3 id="conclusion">Conclusion</h3>
