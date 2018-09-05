@@ -42,7 +42,7 @@ extra-prog-path:    /home/sboo/.nix-profile/libexec/
 --------------------------------------------------
 
 documentation: True
-tests:         False
+tests:         True
 benchmarks:    False
 
 --------------------------------------------------

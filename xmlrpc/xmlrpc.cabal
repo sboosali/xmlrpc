@@ -20,7 +20,7 @@ Description:
 ----------------------------------------
             
 License:      BSD-3-Clause
-License-file: documents/LICENSE
+License-file: docs/LICENSE.txt
 
 Copyright:  Sam Boosalis 2018
 Maintainer: Sam Boosalis <samboosalis@gmail.com>
@@ -31,9 +31,12 @@ Author:
        Sam Boosalis <samboosalis@gmail.com>
 
 Extra-Source-Files:
-                   README.md
-                   LICENSE
-           
+                   docs/*.txt
+                   docs/*.md
+                   docs/*.html
+                   docs/*.org
+                   docs/*.dtd
+
 Tested-with:
   GHC == 8.4.3
 
@@ -354,31 +357,31 @@ library
 -- TESTS
 ----------------------------------------
 
-test-suite xmlrpc-properties
- --TODO import: haskell2020
+-- test-suite xmlrpc-properties
+--  --TODO import: haskell2020
 
- hs-source-dirs:      tests
- main-is:             Properties.hs
- type:                exitcode-stdio-1.0
+--  hs-source-dirs:      tests
+--  main-is:             Properties.hs
+--  type:                exitcode-stdio-1.0
 
- Default-language:   Haskell2010
- default-extensions: PackageImports
- other-extensions:   OverloadedStrings
+--  Default-language:   Haskell2010
+--  default-extensions: PackageImports
+--  other-extensions:   OverloadedStrings
 
- build-depends:
-               xmlrpc
+--  build-depends:
+--                xmlrpc
                
-             , base
-             , mtl
+--              , base
+--              , mtl
              
-             , old-time
-             , bytestring
-             , string-conv
+--              , old-time
+--              , bytestring
+--              , string-conv
 
-             , QuickCheck
-             , tasty-quickcheck
+--              , QuickCheck
+--              , tasty-quickcheck
 
-             , hedgehog
-             , tasty-hedgehog
+--              , hedgehog
+--              , tasty-hedgehog
 
 ----------------------------------------
