@@ -5,7 +5,8 @@ packages:
 
          ./xmlrpc/
          
-         -- ./xmlrpc-*
+         -- ./xmlrpc-client/
+         -- ./xmlrpc-server/
 
          ./examples/
 
@@ -36,26 +37,18 @@ jobs: 6
 extra-lib-dirs:     /home/sboo/.nix-profile/lib/
 extra-include-dirs: /home/sboo/.nix-profile/include/
 extra-prog-path:    /home/sboo/.nix-profile/bin/
----extra-prog-path:    /home/sboo/.nix-profile/libexec/
+extra-prog-path:    /home/sboo/.nix-profile/libexec/
 
 --------------------------------------------------
 
+documentation: True
 tests:         False
 benchmarks:    False
-documentation: False
 
 --------------------------------------------------
 
 haddock-hyperlink-source: True
 haddock-hoogle:           True
-
--- tests:         False
--- benchmarks:    False
--- documentation: False
-
---------------------------------------------------
-
-
 
 --------------------------------------------------
 -- GlobalFlags -----------------------------------
@@ -69,21 +62,7 @@ package *
   extra-lib-dirs:     /home/sboo/.nix-profile/lib/
   extra-include-dirs: /home/sboo/.nix-profile/include/
   extra-prog-path:    /home/sboo/.nix-profile/bin/
-
--- package zlib
---   extra-lib-dirs: /home/sboo/.nix-profile/lib/
-
--- package wai
---   extra-lib-dirs: /home/sboo/.nix-profile/lib/
-
--- package wai-extra
---   extra-lib-dirs: /home/sboo/.nix-profile/lib/
-
--- package wai-app-static
---   extra-lib-dirs: /home/sboo/.nix-profile/lib/
-
--- package warp
---   extra-lib-dirs: /home/sboo/.nix-profile/lib/
+  extra-prog-path:    /home/sboo/.nix-profile/libexec/
 
 --------------------------------------------------
 -- (ToDo) ----------------------------------------
