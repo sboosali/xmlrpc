@@ -61,8 +61,9 @@ test:
 
 ##################################################
 clean:
-	rm -rf "dist/" "dist-newstyle/"
+	rm -rf "./dist/" "./dist-newstyle/" "./dist-newdante/"
 	rm -f *.project.local .ghc.environment.*
+	rm -rf "*/dist/" "*/dist-newstyle/"
 
 .PHONY: clean
 

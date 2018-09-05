@@ -1,5 +1,3 @@
-{-# LANGUAGE ConstraintKinds #-}
-
 --------------------------------------------------
 --------------------------------------------------
 
@@ -12,14 +10,15 @@
 module Network.XmlRpc.Types where
 
 --------------------------------------------------
+--------------------------------------------------
 
-import           "time" Data.Time.Calendar
+--import           "time" Data.Time.Calendar
 import           "time" Data.Time.LocalTime
 
 -------------------------------------------------
 
 import qualified "bytestring" Data.ByteString.Char8      as BS (ByteString)
-import qualified "bytestring" Data.ByteString.Lazy.Char8 as BL (ByteString)
+--import qualified "bytestring" Data.ByteString.Lazy.Char8 as BL (ByteString)
 
 -------------------------------------------------
 
@@ -27,216 +26,6 @@ import Prelude_xmlrpc
 
 --------------------------------------------------
 --------------------------------------------------
-
--- | a @ConstraintKind@ requiring both serialization and deserialization.
-
-type XmlRpc a = (ToXmlRpc a, FromXmlRpc a)
-
---------------------------------------------------
-
-{- | Clients(/Callers) must serialize (the arguments of) their request into XML-RPC
-
-Unless the method being called is @void@ (i.e. returns @()@), they can then deserialize the response via 'FromXmlRpc'.
-
--}
-
-class ToXmlRpc a where
-
-  toValue :: a -> Value
-
-  -- default toValue
-  --   :: (Generic a, GToJSON Value 0 (Rep a)) 
-  --   => a -> Value
-
-  getType :: a -> ValueType
-
-  -- default getType
-  --   :: (Generic a, GToJSON Value 0 (Rep a)) 
-  --   => a -> Type
-
---------------------------------------------------
-
-{- | Servers(/Handlers) must deserialize the request they've received from XML-RPC.
-
-Unless the method being handled is @void@ (i.e. returns @()@), they can then serialize the response via 'ToXmlRpc'.
-
--}
-
-class FromXmlRpc a where
-
-  fromValue :: Value -> Parser a
-
-  -- default fromValue 
-  --   :: (Generic a, GFromJSON 0 (Rep a))
-  --   => Value -> Parser a
-
-  -- | for @instance FromXmlRpc 'Char'@, to avoid @OverlappingInstances@ between @instance FromXmlRpc ['Char']@ and @instance FromXmlRpc [a]@.
-  fromValueList :: [Value] -> Parser [a]
-  fromValueList = traverse fromValue
-
---------------------------------------------------
-
--- | unary 'XmlRpc'.
-
-type XmlRpc1 f = (ToXmlRpc1 f, FromXmlRpc1 f)
-
-class ToXmlRpc1 f where
-
-class FromXmlRpc1 f where
-
---------------------------------------------------
-
--- | binary 'XmlRpc'.
-type XmlRpc2 p = (ToXmlRpc2 p, FromXmlRpc2 p)
-
-class ToXmlRpc2 p where
-
-class FromXmlRpc2 p where
-
---------------------------------------------------
-
--- | higher-order 'XmlRpc'.
-type XmlRpcF r = (ToXmlRpcF r, FromXmlRpcF r)
-
-class ToXmlRpcF r where
-
-class FromXmlRpcF r where
-
---------------------------------------------------
-
-{-| An XML-RPC method call.
-
-Consists of a method name ('MethodName') and a list of parameters (@['Value']@).
-
-Corresponds to the @<methodCall>@ element in an XML-RPC request.
-
--}
-
-data MethodCall = MethodCall
-
- { function  :: String
- , arguments :: [Value]
- }
-
- deriving stock    (Show,Read,Eq,Ord,Generic)
- deriving anyclass (NFData)
-
---------------------------------------------------
-
-{-| An XML-RPC response.
-
-'MethodFault' is failure, 'MethodReturn' is success.
-
--}
-
-type MethodResponse = Either MethodFault MethodReturn
-
---------------------------------------------------
-
-{-|  A successful XML-RPC response.
-
-i.e. the XML-RPC method returns with a single 'Value'.
-
--}
-
-newtype MethodReturn = MethodReturn
-  { returnValue :: Value
-  } 
-
-  deriving stock    (Show,Read,Generic)
-  deriving newtype  (Eq,Ord)
-  deriving newtype  (NFData)
-
---------------------------------------------------
-
--- | @= 'defaultMethodReturn'@
-instance Default MethodReturn where
-  def = defaultMethodReturn
-
--- | @= 'emptyMethodReturn'@
-defaultMethodReturn :: MethodReturn
-defaultMethodReturn = emptyMethodReturn
-
---------------------------------------------------
-
-{-| A failed XML-RPC response. 
-
-i.e. the XML-RPC method fails, with an arbitrary error 'message', and a custom error 'code'.
-
-'MethodFault' corresponds to the @<fault>@ element in an XML-RPC response:
-
-* 'code': corresponds to a @<faultCode>@ element.
-* 'messsage': corresponds to @<faultString>@ element.
-
-NOTE the XML-RPC Specification doesn't specify any meanings for error 'code's.
-Thus, they can be implementation-defined (e.g. mirroring the @sh@ell exit codes); or service-defined, for a particular server-client pair .
-
--}
-
-data MethodFault = MethodFault
-  { code    :: Int
-  , message :: String
-  }
-
-  deriving stock    (Show,Read,Eq,Ord,Lift,Generic)
-  deriving anyclass (NFData,Hashable)
-
---------------------------------------------------
-
--- | @= 'defaultMethodFault'@
-instance Default MethodFault where
-  def = defaultMethodFault
-
-{-| A non-zero code and no message:
-
-@
-'code'    = 1
-'message' = ""
-@
-
--}
-
-defaultMethodFault :: MethodFault
-defaultMethodFault = MethodFault{..}
-  where
-  code    = 1
-  message = ""
-
---------------------------------------------------
-
-{- |
-
-The @<methodName>@ string in an XML-RPC request can have only the following characters:
-
-* alphanumeric (i.e. upper-case @A-Z@, lower-case @a-z@, and numeric characters @0-9@)
-* identifier
-* underscore, dot, colon, slash
-
--}
-
-newtype MethodName = MethodName
-
-  String
-
-  deriving stock    (Show,Read,Lift,Generic)
-  deriving newtype  (Eq,Ord,Semigroup,Monoid)
-  deriving newtype  (NFData,Hashable)
-
-instance IsString MethodName where
-  fromString = coerce
-
---------------------------------------------------
-
--- newtype MethodCall = MethodCall
-
---   String
-
---   deriving stock    (Show,Read,Lift,Generic)
---   deriving newtype  (Eq,Ord,Semigroup,Monoid)
---   deriving newtype  (NFData,Hashable)
-
--- instance IsString MethodCall where
---   fromString = coerce
 
 --------------------------------------------------
 
@@ -290,17 +79,6 @@ data Value
 
 --------------------------------------------------
 
-{-| @= 'stringValue'@
-
-**WARNING** this is a partial function.
-
--}
-
-instance IsString Value where
-  fromString = stringValue
-
---------------------------------------------------
-
 {-|
 
 -}
@@ -314,19 +92,6 @@ type StructOfValues = [(String,Value)]  -- TODO Map String Value (keys are unord
 -}
 
 type ArrayOfValues = [Value] -- TODO Array/Seq Value (is finite)
-
---------------------------------------------------
-
-{-|
-
-**WARNING** this is a partial function, because it performs validation.
-
--}
-
-stringValue :: String -> Value
-stringValue
-  = validStringValue
-  > maybe _stringValue id 
 
 --------------------------------------------------
 
@@ -356,6 +121,111 @@ data ValueType
   deriving stock    (Enum,Bounded,Ix)
   deriving stock    (Show,Read,Eq,Ord,Lift,Generic)
   deriving anyclass (NFData,Hashable)
+
+--------------------------------------------------
+
+{-| An XML-RPC method call.
+
+Consists of a method name ('MethodName') and a list of parameters (@['Value']@).
+
+Corresponds to the @<methodCall>@ element in an XML-RPC request.
+
+-}
+
+data MethodCall = MethodCall
+
+ { function  :: String
+ , arguments :: [Value]
+ }
+
+ deriving stock    (Show,Read,Eq,Ord,Generic)
+ deriving anyclass (NFData)
+
+--------------------------------------------------
+
+{-| An XML-RPC response.
+
+'MethodFault' is failure, 'MethodReturn' is success.
+
+-}
+
+type MethodResponse = Either MethodFault MethodReturn
+
+--------------------------------------------------
+
+{-|  A successful XML-RPC response.
+
+i.e. the XML-RPC method returns with a single 'Value'.
+
+-}
+
+newtype MethodReturn = MethodReturn
+  { returnValue :: Value
+  } 
+
+  deriving stock    (Show,Read,Generic)
+  deriving newtype  (Eq,Ord)
+  deriving newtype  (NFData)
+
+--------------------------------------------------
+
+-- | @= 'defaultMethodReturn'@
+instance Default MethodReturn where
+  def = defaultMethodReturn
+
+--------------------------------------------------
+
+{-| A failed XML-RPC response. 
+
+i.e. the XML-RPC method fails, with an arbitrary error 'message', and a custom error 'code'.
+
+'MethodFault' corresponds to the @<fault>@ element in an XML-RPC response:
+
+* 'code': corresponds to a @<faultCode>@ element.
+* 'messsage': corresponds to @<faultString>@ element.
+
+NOTE the XML-RPC Specification doesn't specify any meanings for error 'code's.
+Thus, they can be implementation-defined (e.g. mirroring the @sh@ell exit codes); or service-defined, for a particular server-client pair .
+
+-}
+
+data MethodFault = MethodFault
+
+  { code    :: Int
+  , message :: String
+  }
+
+  deriving stock    (Show,Read,Eq,Ord,Lift,Generic)
+  deriving anyclass (NFData,Hashable)
+
+--------------------------------------------------
+
+-- | @= 'defaultMethodFault'@
+instance Default MethodFault where
+  def = defaultMethodFault
+
+--------------------------------------------------
+
+{- |
+
+The @<methodName>@ string in an XML-RPC request can have only the following characters:
+
+* alphanumeric (i.e. upper-case @A-Z@, lower-case @a-z@, and numeric characters @0-9@)
+* identifier
+* underscore, dot, colon, slash
+
+-}
+
+newtype MethodName = MethodName
+
+  String
+
+  deriving stock    (Show,Read,Lift,Generic)
+  deriving newtype  (Eq,Ord,Semigroup,Monoid)
+  deriving newtype  (NFData,Hashable)
+
+instance IsString MethodName where
+  fromString = coerce
 
 --------------------------------------------------
 
@@ -390,6 +260,18 @@ instance Applicative Parser where
 
 data Result a
 
+--------------------------------------------------
+
+{-| @= 'stringValue'@
+
+**WARNING** this is a partial function.
+
+-}
+
+instance IsString Value where
+  fromString = stringValue
+
+--------------------------------------------------
 --------------------------------------------------
 
 {-| the type ('ValueType') of the given value ('Value').
@@ -432,6 +314,30 @@ valueType = \case
 
 --------------------------------------------------
 
+{-|
+
+**WARNING** this is a partial function, because it performs validation.
+
+-}
+
+stringValue :: String -> Value
+stringValue
+  = validStringValue
+  > maybe _stringValue id 
+
+--------------------------------------------------
+
+{-|
+
+
+
+-}
+
+validStringValue :: String -> Maybe Value
+validStringValue = _validStringValue
+
+--------------------------------------------------
+
 {-| A (successful) method that returns nothing. 
 
 @≡ ""@
@@ -447,14 +353,26 @@ emptyMethodReturn = MethodReturn{..}
 
 --------------------------------------------------
 
-{-|
+-- | @= 'emptyMethodReturn'@
+defaultMethodReturn :: MethodReturn
+defaultMethodReturn = emptyMethodReturn
 
+--------------------------------------------------
 
+{-| A non-zero code and no message:
+
+@
+'code'    = 1
+'message' = ""
+@
 
 -}
 
-validStringValue :: String -> Maybe Value
-validStringValue = _validStringValue
+defaultMethodFault :: MethodFault
+defaultMethodFault = MethodFault{..}
+  where
+  code    = 1
+  message = ""
 
 --------------------------------------------------
 --------------------------------------------------
@@ -544,6 +462,26 @@ Data.Text.concat is an O(n+m) operation where n and m are the lengths of the str
 Builder is specifically optimized for the mappend operation. It's a cheap O(1) operation (function composition, which is also excellently optimized by GHC). With Builder you are essentially building up the instructions for how to produce the final string result, but delaying the actual creation until you do some Builder -> Text transformation.
 
 ^ https://stackoverflow.com/questions/29102772/haskell-should-i-use-data-text-lazy-builder-to-construct-my-text-values
+
+
+
+
+
+
+-- newtype MethodCall = MethodCall
+
+--   String
+
+--   deriving stock    (Show,Read,Lift,Generic)
+--   deriving newtype  (Eq,Ord,Semigroup,Monoid)
+--   deriving newtype  (NFData,Hashable)
+
+-- instance IsString MethodCall where
+--   fromString = coerce
+
+
+
+
 
 
 -}

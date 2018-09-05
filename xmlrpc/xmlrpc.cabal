@@ -226,7 +226,10 @@ library
  -------------------------   
 
  exposed-modules:
+                 XmlRpc
+
                  Network.XmlRpc.Types
+                 Network.XmlRpc.Classes
                  
                  Network.XmlRpc.Client
                  Network.XmlRpc.Server

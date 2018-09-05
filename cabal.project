@@ -42,7 +42,7 @@ extra-prog-path:    /home/sboo/.nix-profile/bin/
 
 tests:         False
 benchmarks:    False
-documentation: True
+documentation: False
 
 --------------------------------------------------
 
